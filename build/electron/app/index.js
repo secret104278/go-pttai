@@ -169,8 +169,8 @@ function open_window () {
     if (!gptt_win) {
 
         gptt_win = new BrowserWindow({
-          width: 554,
-          height: 1000,
+          width: 414,
+          height: 900,
         })
 
         // Continue to handle mainWindow "close" event here
