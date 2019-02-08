@@ -26,6 +26,7 @@ import (
 	"github.com/ailabstw/go-pttai/content"
 	"github.com/ailabstw/go-pttai/friend"
 	"github.com/ailabstw/go-pttai/me"
+	pkgservice "github.com/ailabstw/go-pttai/service"
 	"github.com/stretchr/testify/assert"
 	baloo "gopkg.in/h2non/baloo.v3"
 )
@@ -118,7 +119,7 @@ func TestFriendForceSyncAccount(t *testing.T) {
 
 	// wait 10
 	t.Logf("wait 10 seconds for hand-shaking")
-	time.Sleep(TimeSleepDefault)
+	time.Sleep(TimeSleepRestart)
 
 	// 8. get-friend-list
 	bodyString = fmt.Sprintf(`{"id": "testID", "method": "friend_getFriendList", "params": ["", 0]}`)
