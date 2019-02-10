@@ -32,6 +32,7 @@ type ProtocolManager struct {
 	// db
 	dbUserLock      *types.LockMap
 	userOplogMerkle *pkgservice.Merkle
+	forceUserMerkle chan struct{}
 
 	// user-node
 	dbUserNodePrefix     []byte
@@ -116,6 +117,7 @@ func NewProtocolManager(profile *Profile, ptt pkgservice.Ptt) (*ProtocolManager,
 	pm := &ProtocolManager{
 		dbUserLock:      dbUserLock,
 		userOplogMerkle: userOplogMerkle,
+		forceUserMerkle: make(chan struct{}),
 	}
 	pm.BaseProtocolManager = newBaseProtocolManager(pm, ptt, profile)
 
@@ -161,7 +163,7 @@ func (pm *ProtocolManager) Start() error {
 	syncWG.Add(1)
 	go func() {
 		defer syncWG.Done()
-		pkgservice.PMOplogMerkleTreeLoop(pm, pm.userOplogMerkle)
+		pkgservice.PMOplogMerkleTreeLoop(pm, pm.userOplogMerkle, pm.forceUserMerkle)
 	}()
 
 	return nil
@@ -194,4 +196,8 @@ func (pm *ProtocolManager) Sync(peer *pkgservice.PttPeer) error {
 
 func (pm *ProtocolManager) GetUserNodeInfo() *UserNodeInfo {
 	return pm.userNodeInfo
+}
+
+func (pm *ProtocolManager) ForceUserMerkle() chan struct{} {
+	return pm.forceUserMerkle
 }

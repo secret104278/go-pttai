@@ -268,3 +268,15 @@ func (b *Backend) MarkFriendSeen(entityIDBytes []byte) (types.Timestamp, error) 
 
 	return pm.SaveLastSeen(types.ZeroTimestamp)
 }
+
+func (b *Backend) ForceFriendMerkle(entityIDBytes []byte) (bool, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return false, err
+	}
+	pm := thePM.(*ProtocolManager)
+
+	pm.ForceFriendMerkle() <- struct{}{}
+
+	return true, nil
+}

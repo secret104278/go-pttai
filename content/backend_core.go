@@ -750,3 +750,15 @@ func (b *Backend) GetJoinKeys(entityIDBytes []byte) ([]*pkgservice.KeyInfo, erro
 
 	return pm.JoinKeyList(), nil
 }
+
+func (b *Backend) ForceBoardMerkle(entityIDBytes []byte) (bool, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return false, err
+	}
+	pm := thePM.(*ProtocolManager)
+
+	pm.ForceBoardMerkle() <- struct{}{}
+
+	return true, nil
+}

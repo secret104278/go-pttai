@@ -130,6 +130,8 @@ type ProtocolManager interface {
 
 	GetMasterOplogMerkleNodeList(level MerkleTreeLevel, startKey []byte, limit int, listOrder pttdb.ListOrder) ([]*MerkleNode, error)
 
+	ForceMasterMerkle() chan struct{}
+
 	// member
 
 	GetMemberList(startID *types.PttID, limit int, listOrder pttdb.ListOrder, isLocked bool) ([]*Member, error)
@@ -157,6 +159,8 @@ type ProtocolManager interface {
 	GetMemberOplogMerkleNodeList(level MerkleTreeLevel, startKey []byte, limit int, listOrder pttdb.ListOrder) ([]*MerkleNode, error)
 
 	GetMemberLogByMemberID(id *types.PttID, isLocked bool) (*MemberOplog, error)
+
+	ForceMemberMerkle() chan struct{}
 
 	// log0
 	SetLog0DB(oplog *BaseOplog)
@@ -313,8 +317,9 @@ type BaseProtocolManager struct {
 	inposttransferMaster func(theMaster Object, theNewMaster Object, oplog *BaseOplog) error
 
 	// master-oplog
-	dbMasterLock *types.LockMap
-	masterMerkle *Merkle
+	dbMasterLock      *types.LockMap
+	masterMerkle      *Merkle
+	forceMasterMerkle chan struct{}
 
 	// member
 	isMember          func(id *types.PttID, isLocked bool) bool
@@ -324,9 +329,10 @@ type BaseProtocolManager struct {
 	inpostdeleteMember func(id *types.PttID, oplog *BaseOplog, origObj Object, opData OpData) error
 
 	// member-oplog
-	dbMemberLock *types.LockMap
-	memberMerkle *Merkle
-	myMemberLog  *MemberOplog
+	dbMemberLock      *types.LockMap
+	memberMerkle      *Merkle
+	forceMemberMerkle chan struct{}
+	myMemberLog       *MemberOplog
 
 	// peer
 	getPeerType func(peer *PttPeer) PeerType
@@ -522,8 +528,9 @@ func NewBaseProtocolManager(
 		maxMasters:        maxMasters,
 
 		// master-oplog
-		dbMasterLock: dbMasterLock,
-		masterMerkle: masterMerkle,
+		dbMasterLock:      dbMasterLock,
+		masterMerkle:      masterMerkle,
+		forceMasterMerkle: make(chan struct{}),
 
 		// member
 		isMember:          isMember,
@@ -531,8 +538,9 @@ func NewBaseProtocolManager(
 		dbMemberIdxPrefix: dbMemberIdxPrefix,
 
 		// member-oplog
-		dbMemberLock: dbMemberLock,
-		memberMerkle: memberMerkle,
+		dbMemberLock:      dbMemberLock,
+		memberMerkle:      memberMerkle,
+		forceMemberMerkle: make(chan struct{}),
 
 		// op
 		renewOpKeySeconds:  renewOpKeySeconds,
@@ -751,13 +759,13 @@ func (pm *BaseProtocolManager) Start() error {
 	syncWG.Add(1)
 	go func() {
 		defer syncWG.Done()
-		PMOplogMerkleTreeLoop(pm, pm.masterMerkle)
+		PMOplogMerkleTreeLoop(pm, pm.masterMerkle, pm.forceMasterMerkle)
 	}()
 
 	syncWG.Add(1)
 	go func() {
 		defer syncWG.Done()
-		PMOplogMerkleTreeLoop(pm, pm.memberMerkle)
+		PMOplogMerkleTreeLoop(pm, pm.memberMerkle, pm.forceMemberMerkle)
 	}()
 
 	myID := pm.Ptt().GetMyEntity().GetID()
@@ -840,8 +848,16 @@ func (pm *BaseProtocolManager) MasterMerkle() *Merkle {
 	return pm.masterMerkle
 }
 
+func (pm *BaseProtocolManager) ForceMasterMerkle() chan struct{} {
+	return pm.forceMasterMerkle
+}
+
 func (pm *BaseProtocolManager) MemberMerkle() *Merkle {
 	return pm.memberMerkle
+}
+
+func (pm *BaseProtocolManager) ForceMemberMerkle() chan struct{} {
+	return pm.forceMemberMerkle
 }
 
 func (pm *BaseProtocolManager) GetOplog0() *BaseOplog {

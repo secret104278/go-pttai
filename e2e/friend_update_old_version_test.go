@@ -774,4 +774,103 @@ func TestFriendUpdateOldVersion(t *testing.T) {
 
 	assert.Equal(article50_0, dataGetArticleBlockList1_50.Result[0].Buf)
 	assert.Equal(article50_1, dataGetArticleBlockList1_50.Result[1].Buf)
+
+	// 51. get board oplog
+	marshaledID, _ = board1_16_2.ID.MarshalText()
+
+	bodyString = fmt.Sprintf(`{"id": "testID", "method": "content_getBoardOplogList", "params": ["%v", "", 0, 2]}`, string(marshaledID))
+
+	dataGetBoardOplogList0_51 := &struct {
+		Result []*content.BoardOplog `json:"result"`
+	}{}
+
+	testListCore(t0, bodyString, dataGetBoardOplogList0_51, t, isDebug)
+	assert.Equal(5, len(dataGetBoardOplogList0_51.Result))
+
+	dataGetBoardOplogList1_51 := &struct {
+		Result []*content.BoardOplog `json:"result"`
+	}{}
+
+	testListCore(t1, bodyString, dataGetBoardOplogList1_51, t, isDebug)
+	assert.Equal(5, len(dataGetBoardOplogList1_51.Result))
+
+	assert.Equal(dataGetBoardOplogList0_51.Result, dataGetBoardOplogList1_51.Result)
+
+	// 52.0 force merkle
+	marshaledID, _ = board1_16_2.ID.MarshalText()
+
+	bodyString = fmt.Sprintf(`{"id": "testID", "method": "content_forceBoardMerkle", "params": ["%v"]}`, string(marshaledID))
+
+	bool0_52_0 := false
+	testCore(t0, bodyString, &bool0_52_0, t, isDebug)
+
+	assert.Equal(true, bool0_52_0)
+
+	bool1_52_0 := false
+	testCore(t1, bodyString, &bool1_52_0, t, isDebug)
+
+	assert.Equal(true, bool1_52_0)
+
+	// 52. merkle: now
+	marshaledID, _ = board1_16_2.ID.MarshalText()
+
+	bodyString = fmt.Sprintf(`{"id": "testID", "method": "content_getBoardOplogMerkleNodeList", "params": ["%v", 1, "", 0, 2]}`, string(marshaledID))
+
+	dataGetBoardOplogMerkleNodeList0_52 := &struct {
+		Result []*pkgservice.BackendMerkleNode `json:"result"`
+	}{}
+
+	testListCore(t0, bodyString, dataGetBoardOplogMerkleNodeList0_52, t, isDebug)
+	assert.Equal(5, len(dataGetBoardOplogMerkleNodeList0_52.Result))
+
+	dataGetBoardOplogMerkleNodeList1_52 := &struct {
+		Result []*pkgservice.BackendMerkleNode `json:"result"`
+	}{}
+
+	testListCore(t1, bodyString, dataGetBoardOplogMerkleNodeList1_52, t, isDebug)
+	assert.Equal(5, len(dataGetBoardOplogMerkleNodeList1_52.Result))
+
+	assert.Equal(dataGetBoardOplogMerkleNodeList0_52.Result, dataGetBoardOplogMerkleNodeList1_52.Result)
+
+	// 53. merkle: hr
+	marshaledID, _ = board1_16_2.ID.MarshalText()
+
+	bodyString = fmt.Sprintf(`{"id": "testID", "method": "content_getBoardOplogMerkleNodeList", "params": ["%v", 2, "", 0, 2]}`, string(marshaledID))
+
+	dataGetBoardOplogMerkleNodeList0_53 := &struct {
+		Result []*pkgservice.BackendMerkleNode `json:"result"`
+	}{}
+
+	testListCore(t0, bodyString, dataGetBoardOplogMerkleNodeList0_53, t, isDebug)
+	assert.Equal(2, len(dataGetBoardOplogMerkleNodeList0_53.Result))
+
+	dataGetBoardOplogMerkleNodeList1_53 := &struct {
+		Result []*pkgservice.BackendMerkleNode `json:"result"`
+	}{}
+
+	testListCore(t1, bodyString, dataGetBoardOplogMerkleNodeList1_53, t, isDebug)
+	assert.Equal(2, len(dataGetBoardOplogMerkleNodeList1_53.Result))
+
+	assert.Equal(dataGetBoardOplogMerkleNodeList0_53.Result, dataGetBoardOplogMerkleNodeList1_53.Result)
+
+	// 54. merkle: day
+	marshaledID, _ = board1_16_2.ID.MarshalText()
+
+	bodyString = fmt.Sprintf(`{"id": "testID", "method": "content_getBoardOplogMerkleNodeList", "params": ["%v", 3, "", 0, 2]}`, string(marshaledID))
+
+	dataGetBoardOplogMerkleNodeList0_54 := &struct {
+		Result []*pkgservice.BackendMerkleNode `json:"result"`
+	}{}
+
+	testListCore(t0, bodyString, dataGetBoardOplogMerkleNodeList0_54, t, isDebug)
+	assert.Equal(2, len(dataGetBoardOplogMerkleNodeList0_54.Result))
+
+	dataGetBoardOplogMerkleNodeList1_54 := &struct {
+		Result []*pkgservice.BackendMerkleNode `json:"result"`
+	}{}
+
+	testListCore(t1, bodyString, dataGetBoardOplogMerkleNodeList1_54, t, isDebug)
+	assert.Equal(2, len(dataGetBoardOplogMerkleNodeList1_54.Result))
+
+	assert.Equal(dataGetBoardOplogMerkleNodeList0_54.Result, dataGetBoardOplogMerkleNodeList1_54.Result)
 }

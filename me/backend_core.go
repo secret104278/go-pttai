@@ -662,3 +662,15 @@ func (b *Backend) GetMyProfile(entityIDBytes []byte) (*account.Profile, error) {
 	return entity.(*MyInfo).Profile, nil
 
 }
+
+func (b *Backend) ForceMeMerkle(entityIDBytes []byte) (bool, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return false, err
+	}
+	pm := thePM.(*ProtocolManager)
+
+	pm.ForceMeMerkle() <- struct{}{}
+
+	return true, nil
+}

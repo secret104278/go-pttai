@@ -23,7 +23,12 @@ import (
 	"github.com/ailabstw/go-pttai/log"
 )
 
-func PMOplogMerkleTreeLoop(pm ProtocolManager, merkle *Merkle) error {
+func PMOplogMerkleTreeLoop(
+	pm ProtocolManager,
+	merkle *Merkle,
+	forceLoop chan struct{},
+) error {
+
 	ticker := time.NewTicker(merkle.GenerateSeconds)
 	defer ticker.Stop()
 
@@ -47,6 +52,8 @@ loop:
 		select {
 		case <-ticker.C:
 			pmGenerateOplogMerkleTree(pm, merkle)
+		case <-forceLoop:
+			pmGenerateOplogMerkleTree(pm, merkle)
 		case <-pm.QuitSync():
 			log.Debug("PMOplogMerkleTreeLoop: QuitSync", "entity", pm.Entity().GetID(), "service", pm.Entity().Service().Name())
 			break loop
@@ -56,7 +63,11 @@ loop:
 	return nil
 }
 
-func pmGenerateOplogMerkleTree(pm ProtocolManager, merkle *Merkle) error {
+func pmGenerateOplogMerkleTree(
+	pm ProtocolManager,
+	merkle *Merkle,
+) error {
+
 	status := pm.Entity().GetStatus()
 	if status != types.StatusAlive {
 		return nil
@@ -106,7 +117,11 @@ func pmGenerateOplogMerkleTree(pm ProtocolManager, merkle *Merkle) error {
 	return nil
 }
 
-func pmGenerateOplogMerkleTreeIsBusy(merkle *Merkle, now types.Timestamp) bool {
+func pmGenerateOplogMerkleTreeIsBusy(
+	merkle *Merkle,
+	now types.Timestamp,
+) bool {
+
 	if merkle.BusyGenerateTS.IsEqual(types.ZeroTimestamp) {
 		return false
 	}

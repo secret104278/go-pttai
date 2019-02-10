@@ -255,6 +255,14 @@ func (api *PrivateAPI) GetBoardOplogMerkle(entityID string) (*pkgservice.Backend
 	return api.b.GetBoardOplogMerkle([]byte(entityID))
 }
 
+func (api *PrivateAPI) ForceBoardMerkle(entityID string) (bool, error) {
+	return api.b.ForceBoardMerkle([]byte(entityID))
+}
+
+/**********
+ * File
+ **********/
+
 func (api *PrivateAPI) UploadFile(entityID string, filename string, bytes []byte) (*BackendUploadFile, error) {
 	return api.b.UploadFile([]byte(entityID), []byte(filename), bytes)
 }
@@ -262,6 +270,10 @@ func (api *PrivateAPI) UploadFile(entityID string, filename string, bytes []byte
 func (api *PrivateAPI) GetFile(entityID string, mediaID string) (*BackendGetFile, error) {
 	return api.b.GetFile([]byte(entityID), []byte(mediaID))
 }
+
+/**********
+ * Image
+ **********/
 
 func (api *PrivateAPI) UploadImage(entityID string, fileType string, bytes []byte) (*BackendUploadImg, error) {
 	return api.b.UploadImage([]byte(entityID), fileType, bytes)
@@ -271,6 +283,10 @@ func (api *PrivateAPI) GetImage(entityID string, imgID string) (*BackendGetImg, 
 	return api.b.GetImage([]byte(entityID), []byte(imgID))
 }
 
+/**********
+ * Article Summary
+ **********/
+
 func (api *PublicAPI) GetArticleSummary(entityID string, articleInfo *BackendArticleSummaryParams) (*ArticleBlock, error) {
 	return api.b.GetArticleSummary([]byte(entityID), articleInfo)
 }
@@ -278,6 +294,10 @@ func (api *PublicAPI) GetArticleSummary(entityID string, articleInfo *BackendArt
 func (api *PublicAPI) GetArticleSummaryByIDs(entityID string, articleInfos []*BackendArticleSummaryParams) (map[string]*ArticleBlock, error) {
 	return api.b.GetArticleSummaryByIDs([]byte(entityID), articleInfos)
 }
+
+/**********
+ * Mark Seen
+ **********/
 
 func (api *PrivateAPI) MarkBoardSeen(entityID string) (types.Timestamp, error) {
 	return api.b.MarkBoardSeen([]byte(entityID))
@@ -305,6 +325,10 @@ func (api *PrivateAPI) GetPendingMasterOplogInternalList(entityID string, logID 
 
 func (api *PrivateAPI) GetMasterOplogMerkleNodeList(entityID string, level uint8, startKey []byte, limit int, listOrder pttdb.ListOrder) ([]*pkgservice.BackendMerkleNode, error) {
 	return api.b.GetMasterOplogMerkleNodeList([]byte(entityID), pkgservice.MerkleTreeLevel(level), startKey, limit, listOrder)
+}
+
+func (api *PrivateAPI) ForceMasterMerkle(entityID string) (bool, error) {
+	return api.b.ForceMasterMerkle([]byte(entityID))
 }
 
 /**********

@@ -65,6 +65,7 @@ type ProtocolManager struct {
 	// me-oplog
 	dbMeLock      *types.LockMap
 	meOplogMerkle *pkgservice.Merkle
+	forceMeMerkle chan struct{}
 
 	// raft
 	raftProposeC         chan string
@@ -132,6 +133,7 @@ func NewProtocolManager(myInfo *MyInfo, ptt pkgservice.MyPtt) (*ProtocolManager,
 
 		// merkle
 		meOplogMerkle: meOplogMerkle,
+		forceMeMerkle: make(chan struct{}),
 
 		//raft
 		raftProposeC:         make(chan string),
@@ -295,7 +297,7 @@ func (pm *ProtocolManager) Start() error {
 	syncWG.Add(1)
 	go func() {
 		defer syncWG.Done()
-		pkgservice.PMOplogMerkleTreeLoop(pm, pm.meOplogMerkle)
+		pkgservice.PMOplogMerkleTreeLoop(pm, pm.meOplogMerkle, pm.forceMeMerkle)
 	}()
 
 	// init me info
@@ -340,4 +342,8 @@ func (pm *ProtocolManager) Sync(peer *pkgservice.PttPeer) error {
 	log.Debug("Sync: Done")
 
 	return nil
+}
+
+func (pm *ProtocolManager) ForceMeMerkle() chan struct{} {
+	return pm.forceMeMerkle
 }

@@ -304,3 +304,15 @@ func (b *Backend) GetNameCardByIDs(idByteList [][]byte) (map[string]*BackendName
 
 	return backendNameCards, nil
 }
+
+func (b *Backend) ForceUserMerkle(entityIDBytes []byte) (bool, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return false, err
+	}
+	pm := thePM.(*ProtocolManager)
+
+	pm.ForceUserMerkle() <- struct{}{}
+
+	return true, nil
+}

@@ -28,6 +28,7 @@ type ProtocolManager struct {
 	// db
 	dbFriendLock      *types.LockMap
 	friendOplogMerkle *pkgservice.Merkle
+	forceFriendMerkle chan struct{}
 
 	// message
 	dbMessagePrefix    []byte
@@ -47,6 +48,7 @@ func NewProtocolManager(f *Friend, ptt pkgservice.Ptt) (*ProtocolManager, error)
 	pm := &ProtocolManager{
 		dbFriendLock:      dbFriendLock,
 		friendOplogMerkle: friendOplogMerkle,
+		forceFriendMerkle: make(chan struct{}),
 	}
 	b, err := pkgservice.NewBaseProtocolManager(
 		ptt,
@@ -115,7 +117,7 @@ func (pm *ProtocolManager) Start() error {
 	syncWG.Add(1)
 	go func() {
 		defer syncWG.Done()
-		pkgservice.PMOplogMerkleTreeLoop(pm, pm.friendOplogMerkle)
+		pkgservice.PMOplogMerkleTreeLoop(pm, pm.friendOplogMerkle, pm.forceFriendMerkle)
 	}()
 
 	return nil
@@ -144,4 +146,8 @@ func (pm *ProtocolManager) Sync(peer *pkgservice.PttPeer) error {
 	}
 
 	return nil
+}
+
+func (pm *ProtocolManager) ForceFriendMerkle() chan struct{} {
+	return pm.forceFriendMerkle
 }

@@ -372,6 +372,18 @@ func (api *PrivateAPI) GetMeOplogMerkleNodeList(entityID string, level uint8, st
 	return api.b.GetMeOplogMerkleNodeList([]byte(entityID), pkgservice.MerkleTreeLevel(level), startKey, limit, listOrder)
 }
 
+func (api *PrivateAPI) ForceMeMerkle(entityID string) (bool, error) {
+	var err error
+	if len(entityID) == 0 {
+		entityID, err = api.b.GetMyIDStr()
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return api.b.ForceMeMerkle([]byte(entityID))
+}
+
 /**********
  * MasterOplog
  **********/
@@ -386,6 +398,18 @@ func (api *PrivateAPI) GetMyMasterOplogList(entityID string, logID string, limit
 		}
 	}
 	return api.b.GetMyMasterOplogList([]byte(entityID), []byte(logID), limit, listOrder)
+}
+
+func (api *PrivateAPI) ForceMasterMerkle(entityID string) (bool, error) {
+	var err error
+	if len(entityID) == 0 {
+		entityID, err = api.b.GetMyIDStr()
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return api.b.ForceMasterMerkle([]byte(entityID))
 }
 
 /**********

@@ -413,3 +413,25 @@ func (b *BaseService) ForceOpKey(entityIDBytes []byte) (bool, error) {
 
 	return true, nil
 }
+
+func (b *BaseService) ForceMasterMerkle(entityIDBytes []byte) (bool, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return false, err
+	}
+
+	thePM.ForceMasterMerkle() <- struct{}{}
+
+	return true, nil
+}
+
+func (b *BaseService) ForceMemberMerkle(entityIDBytes []byte) (bool, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return false, err
+	}
+
+	thePM.ForceMemberMerkle() <- struct{}{}
+
+	return true, nil
+}
