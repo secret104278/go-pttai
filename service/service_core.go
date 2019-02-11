@@ -435,3 +435,27 @@ func (b *BaseService) ForceMemberMerkle(entityIDBytes []byte) (bool, error) {
 
 	return true, nil
 }
+
+func (b *BaseService) GetMasterMerkle(entityIDBytes []byte) (*BackendMerkle, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	m := thePM.MasterMerkle()
+	backendMerkle := MerkleToBackendMerkle(m)
+
+	return backendMerkle, nil
+}
+
+func (b *BaseService) GetMemberMerkle(entityIDBytes []byte) (*BackendMerkle, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	m := thePM.MemberMerkle()
+	backendMerkle := MerkleToBackendMerkle(m)
+
+	return backendMerkle, nil
+}

@@ -259,6 +259,10 @@ func (api *PrivateAPI) ForceBoardMerkle(entityID string) (bool, error) {
 	return api.b.ForceBoardMerkle([]byte(entityID))
 }
 
+func (api *PrivateAPI) GetBoardMerkle(entityID string) (*pkgservice.BackendMerkle, error) {
+	return api.b.GetBoardMerkle([]byte(entityID))
+}
+
 /**********
  * File
  **********/

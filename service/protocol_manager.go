@@ -131,6 +131,7 @@ type ProtocolManager interface {
 	GetMasterOplogMerkleNodeList(level MerkleTreeLevel, startKey []byte, limit int, listOrder pttdb.ListOrder) ([]*MerkleNode, error)
 
 	ForceMasterMerkle() chan struct{}
+	MasterMerkle() *Merkle
 
 	// member
 
@@ -161,6 +162,7 @@ type ProtocolManager interface {
 	GetMemberLogByMemberID(id *types.PttID, isLocked bool) (*MemberOplog, error)
 
 	ForceMemberMerkle() chan struct{}
+	MemberMerkle() *Merkle
 
 	// log0
 	SetLog0DB(oplog *BaseOplog)

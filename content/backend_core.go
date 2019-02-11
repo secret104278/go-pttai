@@ -762,3 +762,20 @@ func (b *Backend) ForceBoardMerkle(entityIDBytes []byte) (bool, error) {
 
 	return true, nil
 }
+
+func (b *Backend) GetBoardMerkle(entityIDBytes []byte) (*pkgservice.BackendMerkle, error) {
+	thePM, err := b.EntityIDToPM(entityIDBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	pm, ok := thePM.(*ProtocolManager)
+	if !ok {
+		return nil, types.ErrInvalidID
+	}
+
+	m := pm.BoardMerkle()
+	backendMerkle := pkgservice.MerkleToBackendMerkle(m)
+
+	return backendMerkle, nil
+}

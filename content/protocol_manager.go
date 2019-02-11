@@ -183,3 +183,7 @@ func (pm *ProtocolManager) Sync(peer *pkgservice.PttPeer) error {
 func (pm *ProtocolManager) ForceBoardMerkle() chan struct{} {
 	return pm.forceBoardMerkle
 }
+
+func (pm *ProtocolManager) BoardMerkle() *pkgservice.Merkle {
+	return pm.boardOplogMerkle
+}
