@@ -52,8 +52,10 @@ var (
 	DBMessagePrefix    = []byte(".mgdb")
 	DBMessageIdxPrefix = []byte(".mgix")
 
-	DBLastSeenPrefix        = []byte(".frls")
-	DBMessageCreateTSPrefix = []byte(".frmc")
+	DBLastSeenPrefix           = []byte(".frls")
+	DBMessageCreateTSPrefix    = []byte(".frmc")
+	DBMessageCreaetTSIdxPrefix = []byte(".mcix")
+	DBMessageCreaetTS2Prefix   = []byte(".mcdb")
 )
 
 // protocol
