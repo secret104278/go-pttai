@@ -198,6 +198,10 @@ func (api *PrivateAPI) GetPeers(profileID string) ([]*pkgservice.BackendPeer, er
 	return api.b.GetPeers([]byte(profileID))
 }
 
+func (api *PrivateAPI) ForceSync(entityID string) (bool, error) {
+	return api.b.ForceSync([]byte(entityID))
+}
+
 /**********
  * Public
  **********/
